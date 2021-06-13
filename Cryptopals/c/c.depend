@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1600597930 source:/home/kaktus/Documents/Trucs/Cryptopals/c/basics.c
+	"basics.h"
+
+1600597874 /home/kaktus/Documents/Trucs/Cryptopals/c/basics.h
+	<stdio.h>
+
+1600597954 source:/home/kaktus/Documents/Trucs/Cryptopals/c/main.c
+	"basics.h"
+
