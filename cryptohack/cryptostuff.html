@@ -1,0 +1,26 @@
+<html>
+<head>
+<title>Crypto Stuff</title>
+</head>
+
+<body>
+
+	<ul>
+		<li><a href="#e=1">e = 1</a></li>
+		<li><a href="#smnp">Message court sans padding</a></li>
+	</ul>
+
+<h3 id="e=1">Mettre l'exposant public à 1</h3>
+Exercice sur Cryptohack : RSA -> Salty<br/>
+
+Si e = 1, alors d = 1 (n), ce qui rend le déchiffrement trivial.
+
+<h3 id="smnp">Message court sans padding</h3>
+Exercice sur Cryptohack : RSA -> Modulus inutilis<br/>
+
+Si m est petit, alors il est possible que m^e < n, i.e c = m^e.<br/>
+Il faut donc calculer la racine e-ième de c pour retrouver m.
+Le module gmpy2 dans Python fait ça très bien avec la fonction iroot.
+
+</body>
+</html>
