@@ -1,0 +1,47 @@
+Woow, j'avais jamais vu ça avant...
+Alors on a un COM file, qui contient des instructions pour le MBR.
+Grosso modo c'est une suite d'instructions qui "explique" au disque dur sur quelle partition booter.
+
+On peut émuler le boot avec qemu :
+
+qemu-system-i386 -drive format=raw,file=flag.com
+
+Ca nous ouvre une fenêtre de boot qui nous demande un mot de passe.
+
+J'ai essayé de désassembler le MBR et j'ai remarqué qu'il y avait toute une série de tests sur al, j'en ai conclu que ça devait être le mot de passe, donc j'ai extrait les parties intéressantes du code et j'ai créé un script Python pour me donner l'équivalent. J'obtiens le mot de passe :
+GUW9KKDBH8ERR40X
+
+Mais ça ne fonctionne pas... Je sais pas bien pourquoi.
+
+Du coup, je l'ai pas inventé mais l'idée c'est d'attacher GDB au programme puis de breaker à chaque jump pour remettre le ZF à 0, et ce jusqu'à passer tous les test, et boum ! FLAG !
+
+En soi c'est pas dur mais pour trouver les bonnes commandes faut s'accrocher...
+
+Déjà on désassemble le bordel avec NASM :
+ndisasm -o 7c00h flag.com > flag-offset.asm
+
+Pourquoi 7c00h ? Ben parce que c'est à cet offset que le MBR se charge si j'ai bien compris.
+
+
+Ensuite on le démarre ce bordel :
+
+qemu-system-i386 -s -S -m 512 -fda flag.com
+-s ? J'ai pas compris.
+-S est équivalent à "-gdb 1234", grosso merdo on dit au programme que gdb peut se connecter via un socket sur le port 1234.
+-m c'est la quantité de RAM allouée en Mo
+-fda j'en sais foutre rien
+
+Bim, on lance ça, et dans une seconde fenêtre on lance gdb à qui on dit poliment :
+target remote localhost:1234
+
+Avec des petites astuces de ligne de commande on se fait une belle break_list :
+cat flag-offset7c00h.asm | grep "al," -A2 | grep jnz | awk -F' ' '{print "*0x"$1}' > break_list
+
+Et après dans gdb on entre patiemment les break un à un, y'a sans doute un bien meilleur moyen de faire mais je le connais pas...
+Et ensuite à chaque breakpoint il faut mettre le ZF à 0, et pour cela. Dans GDB on a la variable $eflags qui représente tous les flags, et ZF est le 6ème bit, donc :
+set $eflags |= (1 << 6)
+
+Puis c, c, c...
+Et à la fin on a le flag qui s'affiche, you ouh ! C'était pas évident de capter le truc quand même.
+Bonnes infos ici :
+https://b4d.sablun.org/blog/2020-09-07-247ctf-com-rev-the-flag-bootloader/

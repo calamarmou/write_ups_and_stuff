@@ -1,0 +1,11 @@
+Appel à strcmp
+-> r2 -d encrypted_password
+-> aaa
+-> s main
+-> pd
+-> db (call to strcmp)
+-> dc (run)
+-> On breakpoint :
+--> drr (print registers content)
+
+FLAG !
